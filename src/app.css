@@ -1,3 +1,41 @@
-#artist-image > img {
+body {
+  max-width: 1024px;
+}
+
+.search__bar {
+  margin-bottom: 20px;
+  justify-content: end;
+  padding: 10px;
+  background-color: #3088b1;
+}
+
+.artist__info {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 20px;
+}
+
+.artist__details {
+  display: flex;
+  flex-direction: column;
+  padding: 0 15px;
+}
+
+.artist__name {
+  font-size: 38px;
+  margin-bottom: 10px;
+}
+
+.artist__name, .artist__image, .artist__bio {
+  display: flex;
+}
+
+.artist__recs {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+#artist-image>img {
   max-height: 250px;
 }

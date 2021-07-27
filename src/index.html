@@ -9,17 +9,25 @@
   <link rel="stylesheet" href="app.css">
 </head>
 <body>
-  <form onsubmit="return false;">
-    <label for="Artist name"></label>
-    <input id="artist" type="text" name="artist">
-    <button onclick="getArtistInfo()">Get info</button>
-  </form>
-  <div id="artist-name"></div>
-  <div id="artist-image"></div>
-  <div id="artist-bio"></div>
-  <div id="artist-rec-1"></div>
-  <div id="artist-rec-2"></div>
-  <div id="artist-rec-3"></div>
+  <div class="search__bar">
+    <form onsubmit="return false;">
+      <label for="Artist name"></label>
+      <input id="artist" type="text" name="artist">
+      <button onclick="getArtistInfo()">Get info</button>
+    </form>
+  </div>
+  <div class="artist__info">
+    <div class="artist__image" id="artist-image"></div>
+    <div class="artist__details">
+      <div class="artist__name" id="artist-name"></div>
+      <div class="artist__bio" id="artist-bio"></div>
+    </div>
+  </div>
+  <div class="artist__recs">
+    <div id="artist-rec-1"></div>
+    <div id="artist-rec-2"></div>
+    <div id="artist-rec-3"></div>
+  </div>
   <div id="Albumchart"></div>
   <div id="Trackchart"></div>
 </body>
