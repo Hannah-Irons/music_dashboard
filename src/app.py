@@ -30,5 +30,29 @@ def getArtistName():
 def getArtistImage():
   return state.artist_image_url
 
+@app.route('/artist/bio', methods=['GET'])
+@cross_origin()
+def getArtistBio():
+  return state.artist_bio
+
+
+@app.route('/artist/recs', methods=['GET'])
+@cross_origin()
+def getArtistRecs():
+  return {'1': state.recommend_similar_1, '2': state.recommend_similar_2, '3': state.recommend_similar_3}
+
+@app.route('/artist/top-albums', methods=['GET'])
+@cross_origin()
+def getTopAlbums():
+  lastfm.get_top_albums()
+  return state.album_df
+
+@app.route('/artist/top-tracks', methods=['GET'])
+@cross_origin()
+def getTopTracks():
+  lastfm.get_top_tracks()
+  return state.tracks_df
+
+  
 if __name__ == '__main__':
   app.run(debug=False)
