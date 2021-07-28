@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
+import plotly.express as px
 
 # Artist name
 artist_name = ''
@@ -36,12 +37,7 @@ def set_top_albums(response):
 
 def set_top_tracks(response):
   global tracks_df
-  track_list = [(i['name'], i['playcount'])
-                for i in response['toptracks']['track']]
-  df = pd.DataFrame(track_list, columns=['track', 'playcount'])
-  df['playcount'] = df['playcount'].astype(str).astype(int)
-  df = df.sort_values('playcount', ascending=False)
-  print(track_list)
-  chartData = {'x': df['track'].tolist(), 'y': df['playcount'].tolist()}
-  tracks_df = chartData
-  
+  data = {}
+  for i in response['toptracks']['track']:
+    data[i['name']] = int(i['playcount'])
+  tracks_df = data

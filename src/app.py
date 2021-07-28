@@ -53,6 +53,5 @@ def getTopTracks():
   lastfm.get_top_tracks()
   return state.tracks_df
 
-  
 if __name__ == '__main__':
   app.run(debug=False)

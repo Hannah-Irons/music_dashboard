@@ -39,3 +39,7 @@ body {
 #artist-image>img {
   max-height: 250px;
 }
+
+.charts {
+  margin: 0 auto;
+}

@@ -56,7 +56,7 @@ def get_top_tracks():
   params['artist'] = state.artist_name
   response = requests.get(url, headers=headers, params=params).json()
   state.set_top_tracks(response)
-  print(response)
+  # print(response)
   return response
 
 def getImageUrl(mbid):
