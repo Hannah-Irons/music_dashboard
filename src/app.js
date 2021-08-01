@@ -2,6 +2,7 @@ const server = 'http://127.0.01:5000';
 const d3 = window.d3;
 
 function getArtistInfo() {
+  cleanUI();
   var artist = document.querySelector('#artist').value;
   var req = new Request(
     `${server}/artist/info?artist=${artist}`,
@@ -17,15 +18,24 @@ function getArtistInfo() {
     populateArtistInfo();
     getTopAlbumsInfo();
     getTopTracksInfo();
+    document.querySelector('.spinner').style.display = 'none';
+    document.querySelector('.artist__info').style.display = 'flex';
     return response.json();
   });
+}
+
+function cleanUI() {
+  document.querySelector('.spinner').style.display = 'flex';
+  document.querySelector('.artist__info').style.display = 'none';
+  document.querySelector('.charts__tracks').innerHTML = '';
+  document.querySelector('.charts__albums').innerHTML = '';
+  document.querySelector('.charts__tracks').innerHTML = '';
 }
 
 function populateArtistInfo() {
   // Get artist name
   fetch(`${server}/artist/name`)
     .then(response => {
-      // console.log(response);
       return response.text();
     })
     .then(data => {
@@ -75,8 +85,6 @@ function getTopAlbumsInfo() {
         y: data.y,
         type: 'bar'
       }];
-
-      // Plotly.newPlot('Albumchart', chart);
     });
 }
 
@@ -85,7 +93,27 @@ function getTopTracksInfo() {
       return response.json();
     })
     .then(data => {
-      // console.log(data);
+      const options = [
+        { label: 'Alphabetical', value: (a, b) => d3.ascending(a.track, b.track) },
+        { label: 'Playcount, ascending', value: (a,b) => a.playcount - b.playcount },
+        { label: 'Playcount, descending', value: (a,b) => b.playcount - a.playcount}
+      ];
+      var template = document.createElement('template');
+      var html = `
+      <form>
+        <select name=i>
+          ${options.map(o => `
+            <option value="${o.label}">
+              ${o.label}
+            </option>
+          `)}
+        </select>
+      </form>`;
+      html = html.trim();
+      template.innerHTML = html;
+
+      var form = document.querySelector('.charts__options').appendChild(template.content.firstChild);
+
       tracks = Object.keys(data);
       chartData = [];
       tracks.forEach(t => {
@@ -95,46 +123,70 @@ function getTopTracksInfo() {
         };
         chartData.push(trackData);
       });
-      console.log(chartData);
 
       var margin = {
         top: 50,
         right: 40,
-        bottom: 70,
+        bottom: 80,
         left: 100
       },
-      width = 1000 - margin.left - margin.right,
-      height = 400 - margin.top - margin.bottom;
+      width = 1200 - margin.left - margin.right,
+      height = 500 - margin.top - margin.bottom;
 
-      var svg = d3.select('#Trackchart')
+      var svg = d3.select('.charts__tracks')
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
         .append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);
 
       var x = d3.scaleBand()
-        .domain(chartData.map(d => d.track)) // scale of x axis
-        .range([0, width]);
+        .domain(chartData.map(d => d.track))
+        .range([0, width])
+        .padding(0.1);
 
-      svg.append('g').attr('transform', `translate(0, ${height})`)
-        .call(d3.axisBottom(x))
+      // store g in variable
+      var xAxis = svg.append('g')
+        .attr('transform', `translate(0, ${height})`)
+        .call(d3.axisBottom(x));
+
+      // break method chaining so we don't store a selection of text elements
+      xAxis
         .selectAll('text')
         .attr('transform', 'translate(-10,0) rotate(-45)')
-        .style('text-anchor','end');
+        .style('text-anchor', 'end');
 
       var y = d3.scaleLinear()
-        .domain([0, d3.max(chartData, d => { return d.playcount; })]) // scale of y axis
+        .domain([0, d3.max(chartData, d => { return d.playcount; })])
         .range([height, 0]);
 
-      svg.append('g').call(d3.axisLeft(y));
+      svg.append('g')
+        .attr('class', '.yaxis')
+        .call(d3.axisLeft(y));
 
       svg.selectAll('rect')
         .data(chartData)
         .enter()
         .append('rect')
+        .attr('class', '.bar')
         .style('fill', 'steelblue')
         .attr('x', d => x(d.track))
         .attr('y', d => y(d.playcount))
         .attr('height', d => { return height - y(d.playcount); })
         .attr('width', x.bandwidth );
+      
+      form.onchange = () => {
+        setTimeout(() => {
+          svg.selectAll('rect')
+            .sort(options[form.i.selectedIndex].value)
+            .call(function (rects) {
+              x.domain(rects.data().map(d => d.track));
+            })
+            .transition()
+            .duration(500)
+            .attr('x', d => x(d.track));
+
+          // transition the x axis to reflect the new data:
+          xAxis.transition().call(d3.axisBottom(x));
+        }, 500);
+      };
     });
 }

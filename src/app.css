@@ -10,7 +10,7 @@ body {
 }
 
 .artist__info {
-  display: flex;
+  display: none;
   flex-direction: row;
   margin-bottom: 20px;
 }
@@ -26,6 +26,10 @@ body {
   margin-bottom: 10px;
 }
 
+.artist__bio {
+  flex-direction: column;
+}
+
 .artist__name, .artist__image, .artist__bio {
   display: flex;
 }
@@ -38,8 +42,33 @@ body {
 
 #artist-image>img {
   max-height: 250px;
+  max-width: 250px;
+  object-fit: scale-down;
 }
 
 .charts {
   margin: 0 auto;
+}
+
+.spinner {
+  display: none;
+  margin: 10px auto;
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
