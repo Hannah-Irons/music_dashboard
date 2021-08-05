@@ -1,5 +1,6 @@
+/* styles for each item in the html */
 body {
-  max-width: 1024px;
+  max-width: 1200px;
 }
 
 .search__bar {
@@ -50,6 +51,7 @@ body {
   margin: 0 auto;
 }
 
+/* this is the animated spinning object that comes up while the data loads */
 .spinner {
   display: none;
   margin: 10px auto;

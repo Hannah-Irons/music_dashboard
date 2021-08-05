@@ -4,8 +4,6 @@
 import re
 import requests
 from app import state
-# import state
-import xml.etree.ElementTree as ET
 
 # API credentials
 apiKey = 'b3962e59096e397a8034d5ac02284e9b'
@@ -16,7 +14,6 @@ url = 'https://ws.audioscrobbler.com/2.0/'
 headers = {
   'user-agent': 'Dataquest',
   'content-type': 'application/json',
-  'Access-Control-Allow-Origin': '*',
 }
 
 # Request params
@@ -39,7 +36,6 @@ def get_artist_info(artist):
   mbid = response['artist']['mbid']
   state.artist_image_url = getImageUrl(mbid)
   state.set_artist_info(response)
-  # print(state.artist_image_url)
   return response
 
 # get_top_albums
@@ -59,6 +55,13 @@ def get_top_tracks():
   # print(response)
   return response
 
+# The lastFM api will return an image url but we're not allowed to display it, 
+# all iamges default to a blank grey star. However, from lastFM does provide a
+# unique identifier for each artist: mbid that can be used with the musicbrainz
+# api which will return a dictionary of resources for image locations. We look 
+# for the part of the reponse that conatins relations: wikidata. The wiki data 
+# api will then contain a url to an open source image for that artist that we 
+# are allowed to use. 
 def getImageUrl(mbid):
   url = 'https://musicbrainz.org/ws/2/artist/' + mbid + '?inc=url-rels&fmt=json'
   image_url = 'https://wikidata.org/w/api.php?action=wbgetclaims&property=P18&entity='
@@ -75,10 +78,12 @@ def getImageUrl(mbid):
   if match:
     image_url = image_url + match.group(1) + '&format=json'
   
-  image_name = requests.get(image_url).json(
+  # In the case where no image exists in the wikidata we exit from this part of the
+  # process carry on without an image. 
+  try:
+    image_name = requests.get(image_url).json(
   )['claims']['P18'][0]['mainsnak']['datavalue']['value'].replace(' ', '_')
-  return 'https://commons.wikimedia.org/w/index.php?title=special:Redirect/file/' + image_name
-
-# get_artist_info('rihanna')
-
-
+    return 'https://commons.wikimedia.org/w/index.php?title=special:Redirect/file/' + image_name
+  except:
+    print('No image found for artist')
+    return ''

@@ -4,10 +4,18 @@ from flask import Flask, request, render_template
 from flask_cors import CORS, cross_origin
 import services.state as state
 
+# Flask builds the web frame work.
+# CORS is Cross Origin Resource Sharing, allows the JSON responses to be passed 
+# from lastFM up the chain, must = 'Content-Type'.
+
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
+# Create the routes, in these example the API end points. The route methods are all 
+# 'GETS' which are requesting infomation and returning it. 
+# The 'state' in the return is the file that is processesing the responses. 
+#  
 @app.route('/')
 def index():
   return render_template('index.html')
@@ -53,5 +61,6 @@ def getTopTracks():
   lastfm.get_top_tracks()
   return state.tracks_df
 
+# not sure what this line is doing
 if __name__ == '__main__':
   app.run(debug=False)
